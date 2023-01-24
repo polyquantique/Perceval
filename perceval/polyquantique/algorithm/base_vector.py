@@ -29,7 +29,18 @@ class base_vector():
 
 
 class source():
-    """envelope 
-    gamma"""
+    """
+    Make a source for the granularity methode
+
+
+
+    """
+
+    def __init__(self,gamma,envelope) -> None:
+        pass
+    
+    def set_gamma():
+        pass
+
     def set_envelope():
         pass
