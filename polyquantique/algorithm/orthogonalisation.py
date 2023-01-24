@@ -1,3 +1,3 @@
-def orthogonalisation(Vector,type):
+def orthogonalisation(base_vector,type="lowdin"):
     
     pass
