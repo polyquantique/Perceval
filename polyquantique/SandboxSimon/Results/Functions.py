@@ -135,6 +135,7 @@ def modified_Schmidt(waves,x):
         for j in range(i+1):
             coeffs[i,j]=sc.integrate.simps(waves[i] * new_base[j], x)
 
+
     return new_base, coeffs
 
 def Lowdin(waves,x):
