@@ -33,6 +33,7 @@ class BasicStateJitter():
         self.space_array = np.linspace(-10,30,10000)
         self.vector_list = self.Vector_list(offset,source)
         self.coef_matrix, self.vector_list_ortho, self.new_base= self.orthogonalisation(methode='Gram_Schmidt')
+        # crate state vector 
 
     def orthogonalisation(self,methode='Gram_Schmidt'):
         if methode=='Gram_Schmidt':
@@ -75,6 +76,8 @@ class Source():
     """
 
     def __init__(self,distribution_list,envelope_list):
+        # distribution_list[nom,nom du fichier]
+        # nom du fichier - self.envelope arg
         self.distribution=distribution_list[0]
         self.distribution_arg = distribution_list[1:]
         self.envelope =envelope_list[0]
@@ -90,7 +93,7 @@ class Source():
         if self.envelope == "Exponential":
             return Exponential(np.array(x_list),self.envelope_arg[0])
         if self.envelope == "Experimental":
-            # code here experimental envelope were argument self.envelope_arg[0] = "file_name.csv"
+            # code here experimental envelope were argument self.envelope_arg[0] = "file_name.json"
             pass
         else :
             raise TypeError("Unknow envelope")
