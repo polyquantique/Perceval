@@ -5,6 +5,7 @@ from perceval.polyquantique.algorithm.DistributionEnvelope import Exponential, O
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sc
+import itertools
 
 
 class BasicStateJitter():
@@ -33,7 +34,7 @@ class BasicStateJitter():
         self.space_array = np.linspace(-10,30,10000)
         self.vector_list = self.Vector_list(offset,source)
         self.coef_matrix, self.vector_list_ortho, self.new_base= self.orthogonalisation(methode='Gram_Schmidt')
-        # crate state vector 
+        self.coef_list ,self.bs_vector =  self.make_states()
 
     def orthogonalisation(self,methode='Gram_Schmidt'):
         if methode=='Gram_Schmidt':
@@ -44,20 +45,21 @@ class BasicStateJitter():
             new_base = new_base.T
             for i in range(len(new_base)):
                 new_base[i] = new_base[i] / np.sqrt(Overlap(new_base[i], new_base[i], self.space_array))
-        coef_matrix=np.zeros((self.bs.m,self.bs.m))
-        for i in range(self.bs.m):
+        coef_matrix=np.zeros((self.bs.n,self.bs.n))
+        for i in range(self.bs.n):
             for j in range(i+1):
                 coef_matrix[i,j]=sc.integrate.simps(self.vector_list[i] * new_base[j], self.space_array)
 
         vector_list_ortho=np.zeros(self.vector_list.shape)
-        for i in range(self.bs.m):
-            for j in range(self.bs.m):
+        for i in range(self.bs.n):
+            for j in range(self.bs.n):
                 vector_list_ortho[i]=vector_list_ortho[i]+coef_matrix[i,j]*new_base[j]
 
         return coef_matrix,vector_list_ortho,new_base
     
     def Vector_list(self,jitter,source):
         vector_list = np.zeros((self.bs.n,self.space_array.size))
+        jitter = jitter[np.array(list(self.bs))==1]
         for photon in range(self.bs.n):
             vector_list[photon,:] = source.envelope_vector([self.space_array-jitter[photon]])
         return vector_list
@@ -68,6 +70,20 @@ class BasicStateJitter():
         plt.plot(self.space_array,self.new_base.T)
         plt.show()
 
+    def make_states(self):
+        bs_vector = list(itertools.product([0,1],repeat = self.bs.n))[1:]
+        coef_list = np.zeros((len(bs_vector),self.bs.n))
+        for state in range(len(bs_vector)):
+            for j in range(self.coef_matrix.shape[1]):
+                coef_column = 1
+                for i in range(self.coef_matrix.shape[0]):
+                    if bs_vector[state][i] == 1:
+                        coef_column *= self.coef_matrix[i,j]
+                    else :
+                        coef_column *= np.sum(np.delete(self.coef_matrix[i,:],j))
+                coef_list[state,j] = coef_column
+        return coef_list ,bs_vector
+    
 
 class Source():
     """
