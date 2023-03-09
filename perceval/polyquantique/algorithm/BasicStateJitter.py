@@ -31,7 +31,8 @@ class BasicStateJitter():
             raise TypeError("State and jitter must have the same dimension")
         self.offset = offset
         self.source = source
-        self.space_array = np.linspace(-10,30,10000)
+        self.size_vect_array = 10000
+        self.space_array = np.linspace(-10,30,self.size_vect_array)
         self.vector_list = self.Vector_list(offset,source)
         self.coef_matrix, self.vector_list_ortho, self.new_base= self.orthogonalisation(methode='Gram_Schmidt')
         self.coef_list ,self.bs_vector =  self.make_states()
@@ -82,6 +83,13 @@ class BasicStateJitter():
                     else :
                         coef_column *= np.sum(np.delete(self.coef_matrix[i,:],j))
                 coef_list[state,j] = coef_column
+        if self.bs.n != self.bs.m :
+            idx_zeros = np.where(np.array(list(self.bs)) == 0)[0]
+            for idx in idx_zeros :
+                for state in range(len(bs_vector)):
+                    state0 = list(bs_vector[state])
+                    state0.insert(idx,0)
+                    bs_vector[state] = tuple(state0)
         return coef_list ,bs_vector
     
 
