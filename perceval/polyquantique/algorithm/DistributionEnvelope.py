@@ -22,7 +22,7 @@ def Exponential(x, gamma):
     Returns:
         (array): Exponential values at x."""
 
-    E = (gamma) * np.exp(-gamma * x) * np.heaviside(x, 0.5)
+    E = (gamma)**(1/2) * np.exp(-gamma * x/2) * np.heaviside(x, 0.5)
 
     return E
 

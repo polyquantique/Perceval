@@ -27,8 +27,8 @@ class ProcessorJitter():
         for output_states in range(len(Analyse['output_states'])):
             for input_states in range(len(Analyse['input_states'])):
                 for vect in range(bs_jitter.bs.n):
-                    output_vect[output_states,:] += Analyse['results'][input_states,output_states]*bs_jitter.coef_list[input_states,vect]*bs_jitter.new_base[vect,:]
-            output_prob[output_states] = sc.integrate.simps(output_vect[output_states,:],bs_jitter.space_array)
+                    output_vect[output_states,:] += np.sqrt(Analyse['results'][input_states,output_states]*bs_jitter.coef_list[input_states,vect])*bs_jitter.new_base[vect,:]
+            output_prob[output_states] = sc.integrate.simps(output_vect[output_states,:]*output_vect[output_states,:],bs_jitter.space_array)
         return output_vect,output_prob
 
     def print_vect(self,bs_jitter):
