@@ -72,24 +72,22 @@ class BasicStateJitter():
         plt.show()
 
     def make_states(self):
-        bs_vector = list(itertools.product([0,1],repeat = self.bs.n))[1:]
-        coef_list = np.zeros((len(bs_vector),self.bs.n))
-        for state in range(len(bs_vector)):
-            for j in range(self.coef_matrix.shape[1]):
-                coef_column = 1
-                for i in range(self.coef_matrix.shape[0]):
-                    if bs_vector[state][i] == 1:
-                        coef_column *= self.coef_matrix[i,j]
-                    else :
-                        coef_column *= np.sum(np.delete(self.coef_matrix[i,:],j))
-                coef_list[state,j] = coef_column
-        if self.bs.n != self.bs.m :
-            idx_zeros = np.where(np.array(list(self.bs)) == 0)[0]
-            for idx in idx_zeros :
-                for state in range(len(bs_vector)):
-                    state0 = list(bs_vector[state])
-                    state0.insert(idx,0)
-                    bs_vector[state] = tuple(state0)
+        idx_matrix = list(itertools.product(np.arange(self.bs.n),repeat=self.bs.n))
+        coef_list = np.ones(len(idx_matrix))
+        for idx in range(len(idx_matrix)):
+            for line in range(len(idx_matrix[idx])):
+                coef_list[idx]*= self.coef_matrix[line,idx_matrix[idx][line]]**2
+        bs_vector = []
+        for idx in range(len(idx_matrix)):
+            list_element = []
+            for vector in range(self.bs.n) :
+                element = list(np.where(np.array(idx_matrix[idx])==vector,1,0))
+                if self.bs.n != self.bs.m :
+                    idx_zeros = np.where(np.array(list(self.bs)) == 0)[0]
+                    for idxz in idx_zeros :
+                        element.insert(idxz,0)
+                list_element.append(tuple(element))
+            bs_vector.append(list_element)
         return coef_list ,bs_vector
     
 
