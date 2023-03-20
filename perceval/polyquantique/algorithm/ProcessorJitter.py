@@ -11,9 +11,18 @@ class ProcessorJitter():
 
 
 
-    def __init__(self, bs_jitter,circuit):
-        processor = pcvl.Processor("Naive", circuit)
-        self.inputs = [pcvl.BasicState(state) for state in list(itertools.product([0,1],repeat = bs_jitter.bs.n))]
+    def __init__(self, bs_jitter,processor):
+        processor = processor
+        self.inputs = []
+        for state in list(itertools.product([0,1],repeat = bs_jitter.bs.n)):
+            state0 = list(state)
+            if bs_jitter.bs.n != bs_jitter.bs.m :
+                idx_zeros = np.where(np.array(list(bs_jitter.bs)) == 0)[0]
+                for idxz in idx_zeros :
+                    state0.insert(idxz,0)
+                self.inputs.append(pcvl.BasicState(state0))
+            else:
+                self.inputs.append(pcvl.BasicState(state0))
         self.n = bs_jitter.bs.n
         Analyse = pcvl.algorithm.Analyzer(processor,self.inputs,"*")
         pcvl.pdisplay(Analyse)
@@ -33,7 +42,7 @@ class ProcessorJitter():
                 if list(sta) == [ 0 for i in range(bs_jitter.bs.m)]:
                     listv.remove(sta)
                     n+=1
-            idx_matrix = list(itertools.product(np.arange(len(Analyse['output_states'])),repeat=bs_jitter.bs.m-n))
+            idx_matrix = list(itertools.product(np.arange(len(Analyse['output_states'])),repeat=bs_jitter.bs.n-n))
             for idx in range(len(idx_matrix)):
                 prob = 1
                 vec = np.zeros(bs_jitter.bs.m)
