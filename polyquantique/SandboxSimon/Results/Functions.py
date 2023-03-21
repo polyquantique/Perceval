@@ -20,6 +20,9 @@ def Lrz(x,gamma):
     L = np.sqrt(2*gamma/np.pi)/(gamma-2*1j*(x))
     return L
 
+def realLrz(x,gamma):
+    L = (np.sqrt(2*gamma/np.pi)/(gamma-2*1j*(x))) ** 2
+    return L
 
 def Exponential(x, gamma):
     """Calculates an Exponential enveloppe for an array of positions.
@@ -79,7 +82,7 @@ def Schmidt(waves,x):
     return new_base, coeffs
 
 
-def qr_mgs_decompose(matrix: np.array) -> (np.array, np.array):
+def qr_mgs_decompose(matrix: np.array):
     """
     For n x m matrix return Q1 and R1 components of QR decomposition using
     the modified Gram-Schmidt process, where R1 is n x n upper triangular
