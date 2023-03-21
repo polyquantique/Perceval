@@ -24,9 +24,8 @@ class ProcessorJitter():
             else:
                 self.inputs.append(pcvl.BasicState(state0))
         self.n = bs_jitter.bs.n
-        Analyse = pcvl.algorithm.Analyzer(processor,self.inputs,"*")
-        pcvl.pdisplay(Analyse)
-        self.analyse = Analyse.compute()
+        self.analyser = pcvl.algorithm.Analyzer(processor,self.inputs,"*")
+        self.analyse = self.analyser.compute()
         self.output_vect,self.output_prob = self.make_results(bs_jitter,processor)
         
 
@@ -36,12 +35,9 @@ class ProcessorJitter():
         list_in = [list(Analyse['input_states'][i]) for i in range(len(Analyse['input_states']))]
         output_prob = np.zeros((len(Analyse['output_states']),1))
         for state in range(len(bs_jitter.bs_vector)):
-            n=0
             listv = bs_jitter.bs_vector[state]
-            for sta in bs_jitter.bs_vector[state]:
-                if list(sta) == [ 0 for i in range(bs_jitter.bs.m)]:
-                    listv.remove(sta)
-                    n+=1
+            n=listv.count(tuple([ 0 for i in range(bs_jitter.bs.m)]))
+            for i in range(n): listv.remove(tuple([ 0 for i in range(bs_jitter.bs.m)]))
             idx_matrix = list(itertools.product(np.arange(len(Analyse['output_states'])),repeat=bs_jitter.bs.n-n))
             for idx in range(len(idx_matrix)):
                 prob = 1
@@ -53,10 +49,6 @@ class ProcessorJitter():
                 if prob != 0:
                     output_prob[output_vect.index(list(vec))] += prob*bs_jitter.coef_list[state]
         return output_vect,output_prob
-
-    def print_vect(self,bs_jitter):
-        plt.plot(bs_jitter.space_array,self.output_vect.T)
-        plt.show()
 
     def print_output(self):
         for output_states in range(len(self.analyse['output_states'])):

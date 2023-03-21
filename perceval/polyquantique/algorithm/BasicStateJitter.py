@@ -1,7 +1,7 @@
 
 
 import perceval as pcvl
-from perceval.polyquantique.algorithm.DistributionEnvelope import Exponential, Overlap , qr_mgs_decompose, characterize_basis
+from perceval.polyquantique.algorithm.DistributionEnvelope import Exponential, Overlap , qr_mgs_decompose, characterize_basis, Gaussian
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sc
@@ -67,8 +67,14 @@ class BasicStateJitter():
 
     def print_vect(self):
         plt.plot(self.space_array,self.vector_list.T)
+        plt.ylabel('Amplitude normalisée')
+        plt.xlabel('Temps (ns)')
+        plt.title('Enveloppe des photons')
         plt.show()
         plt.plot(self.space_array,self.new_base.T)
+        plt.ylabel('Amplitude normalisée')
+        plt.xlabel('Temps (ns)')
+        plt.title('Enveloppe normalisée des photons')
         plt.show()
 
     def make_states(self):
@@ -114,9 +120,11 @@ class Source():
     def envelope_vector(self,x_list):
         if self.envelope == "Exponential":
             return Exponential(np.array(x_list),self.envelope_arg[0])
-        if self.envelope == "Experimental":
+        elif self.envelope == "Experimental":
             # code here experimental envelope were argument self.envelope_arg[0] = "file_name.json"
             pass
+        elif self.envelope == "Gaussian" :
+            return Gaussian(np.array(x_list), self.envelope_arg[0])
         else :
             raise TypeError("Unknow envelope")
         
