@@ -20,8 +20,8 @@ def Lrz(x,gamma):
     L = np.sqrt(2*gamma/np.pi)/(gamma-2*1j*(x))
     return L
 
-def realLrz(x,gamma):
-    L = (np.sqrt(2*gamma/np.pi)/(gamma-2*1j*(x))) ** 2
+def lorenztienne(x,x0,gamma):
+    L = (gamma/((x-x0)**2+gamma**2))
     return L
 
 def Exponential(x, gamma):
