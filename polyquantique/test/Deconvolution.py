@@ -26,7 +26,7 @@ def Lrz(x,gamma):
 c=299792458 #speed of light [m/s]
 t0 = 30e-12 #shift in time [s]
 z0 =c*t0 #shift in space [m]
-hom_experimental=0.93
+hom_experimental=0.71916
 
 
 
