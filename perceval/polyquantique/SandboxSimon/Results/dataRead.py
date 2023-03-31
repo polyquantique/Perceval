@@ -19,8 +19,8 @@ def txtRead(filename):
 def xpRead(filename):
     with open(filename) as file:
         data = json.load(file)
-        time = data["delay data"]['ch3']['x']
-        env1 = data["delay data"]['ch3']['y'] 
+        time = data["delay data"]['ch2']['x']
+        env1 = data["delay data"]['ch2']['y'] 
         env2 = data["delay data"]['ch4']['y']
         delay = data["delay data"]["delay"]
         c00 = data['cnot']["00"]

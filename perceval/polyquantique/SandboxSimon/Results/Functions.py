@@ -131,12 +131,12 @@ def modified_Schmidt(waves,x):
             break 
     new_base = new_base.T
     for i in range(len(new_base)):
-        new_base[i] = new_base[i] / np.sqrt(Overlap(new_base[i], new_base[i], x))
+        new_base[i] /= np.sqrt(Overlap(new_base[i], new_base[i], x))
 
     coeffs=np.zeros((N_shift,N_shift))
     for i in range(N_shift):
         for j in range(i+1):
-            coeffs[i,j]=sc.integrate.simps(waves[i] * new_base[j], x)
+            coeffs[i,j]=Overlap(waves[i], new_base[j], x)
 
 
     return new_base, coeffs
