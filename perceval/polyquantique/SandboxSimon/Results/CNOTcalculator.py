@@ -121,7 +121,8 @@ def create_inputs(enterFunc,Coefs,Dictionnary = None):
         return InputsBS
 
 def calculateCNOT(p):
-    names = ['./acquired_data/xp_00/data.json','./acquired_data/xp_01/data.json','./acquired_data/xp_02/data.json','./acquired_data/xp_03/data.json','./acquired_data/xp_04/data.json','./acquired_data/xp_05/data.json','./acquired_data/xp_06/data.json','./acquired_data/xp_07/data.json','./acquired_data/xp_08/data.json','./acquired_data/xp_09/data.json']
+    #names = ['./acquired_data/xp_00/data.json','./acquired_data/xp_01/data.json','./acquired_data/xp_02/data.json','./acquired_data/xp_03/data.json','./acquired_data/xp_04/data.json','./acquired_data/xp_05/data.json','./acquired_data/xp_06/data.json','./acquired_data/xp_07/data.json','./acquired_data/xp_08/data.json','./acquired_data/xp_09/data.json']
+    names = ['./acquired_data/xp_00/data.json']
     compareVal = []
     realValMax = []
     realValMin = []
@@ -133,7 +134,8 @@ def calculateCNOT(p):
         TableValue = []
 
 
-        statesProb = dict.fromkeys(statesdict.keys(),0)
+        #statesProb = dict.fromkeys(statesdict.keys(),0)
+        statesProb = {}
 
         [C,Inputs,Expected] = create_CRand(2,coeff)
         C = np.array(C)
@@ -156,6 +158,7 @@ def calculateCNOT(p):
                     realOutput[ii] = realOutput[ii] + output[ii] * abs(InputsBS[InputsBS[i]]) ** 2
                 else:
                     realOutput[ii] = output[ii] * abs(InputsBS[InputsBS[i]]) ** 2
+            
 
         Prob = 0
         
@@ -163,10 +166,14 @@ def calculateCNOT(p):
             ls = np.array(states)
             Cond = ls[0:4] + ls[4:]
             tempState = pcvl.BasicState(Cond)
-            #print(tempState,val)
+            
+            #if tempState in statesProb.keys():
             if tempState in statesProb.keys():
                 statesProb[tempState] += val
-        
+            else :
+                statesProb[tempState] = val
+
+        print('statesProb')
         for i,j in statesProb.items():
             print(i,j)
         results = {key: value / 4 for key, value in statesProb.items()}
@@ -174,7 +181,7 @@ def calculateCNOT(p):
 
         TableValue.append(results)
         A = pcvl.BasicState([0,1,0,1])
-        compareVal.append(statesProb[A])
+        compareVal.append(statesProb)
         realValMax.append(table[2,3])
         realValMin.append(table[3,2])
         delayVal.append(delay)
