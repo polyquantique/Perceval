@@ -32,7 +32,7 @@ class BasicStateJitter():
         self.offset = offset
         self.source = source
         self.size_vect_array = 10000
-        self.space_array = np.linspace(-10,30,self.size_vect_array)
+        self.space_array = np.linspace(-0.100,0.600,self.size_vect_array)
         self.vector_list = self.Vector_list(offset,source)
         self.coef_matrix, self.vector_list_ortho, self.new_base= self.orthogonalisation(methode='Gram_Schmidt')
         self.coef_list ,self.bs_vector =  self.make_states()
@@ -106,9 +106,9 @@ class Source():
     def __init__(self,distribution_list,envelope_list):
         # distribution_list[nom,nom du fichier]
         # nom du fichier - self.envelope arg
-        self.distribution=distribution_list[0]
+        self.distribution = distribution_list[0]
         self.distribution_arg = distribution_list[1:]
-        self.envelope =envelope_list[0]
+        self.envelope = envelope_list[0]
         self.envelope_arg = envelope_list[1:]
 
     def distribution_jitter(self):
