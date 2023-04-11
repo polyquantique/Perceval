@@ -23,6 +23,7 @@ def xpRead(filename):
         env1 = data["delay data"]['ch2']['y'] 
         env2 = data["delay data"]['ch4']['y']
         delay = data["delay data"]["delay"]
+        Vhom = data["hom"]
         c00 = data['cnot']["00"]
         c01 = data['cnot']["01"]
         c10 = data['cnot']["10"]
@@ -40,4 +41,4 @@ def xpRead(filename):
 
         
 
-    return time, env1, env2,delay, table
+    return time, env1, env2,delay, table, Vhom

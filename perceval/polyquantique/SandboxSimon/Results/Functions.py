@@ -48,8 +48,9 @@ def Overlap(u, v, x):
 
     Returns:
         (float): Overlap integral value."""
-
+    A = np.conj(u) * np.array(v)
     OverLap = sc.integrate.simps(np.conj(u) * v, x)
+    #OverLap = sc.integrate.romb(A, x[1]-x[0])
 
     return OverLap
 
@@ -130,14 +131,14 @@ def modified_Schmidt(waves,x):
         if characterize_basis(new_base) < 2*10**-15:
             break 
     new_base = new_base.T
+
     for i in range(len(new_base)):
         new_base[i] /= np.sqrt(Overlap(new_base[i], new_base[i], x))
 
     coeffs=np.zeros((N_shift,N_shift))
     for i in range(N_shift):
         for j in range(i+1):
-            coeffs[i,j]=Overlap(waves[i], new_base[j], x)
-
+            coeffs[i,j] = (Overlap(waves[i], new_base[j], x))
 
     return new_base, coeffs
 
