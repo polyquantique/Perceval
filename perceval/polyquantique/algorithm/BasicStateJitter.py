@@ -13,7 +13,7 @@ class BasicStateJitter():
     Base vector for granularity algorithm
     """
 
-    def __init__(self,state:str,offset = None,source=None):
+    def __init__(self,state:str,offset = None,source=None,size_vect = 10000):
         """
         Input :
         state : str             string for the basic state
@@ -31,8 +31,8 @@ class BasicStateJitter():
             raise TypeError("State and jitter must have the same dimension")
         self.offset = offset
         self.source = source
-        self.size_vect_array = 10000
-        self.space_array = np.linspace(-10,30,self.size_vect_array)
+        self.size_vect_array = size_vect
+        self.space_array = np.linspace(self.source.temps[0],self.source.temps[1],self.size_vect_array)
         self.vector_list = self.Vector_list(offset,source)
         self.coef_matrix, self.vector_list_ortho, self.new_base= self.orthogonalisation(methode='Gram_Schmidt')
         self.coef_list ,self.bs_vector =  self.make_states()
@@ -103,13 +103,12 @@ class Source():
 
     """
 
-    def __init__(self,distribution_list,envelope_list):
-        # distribution_list[nom,nom du fichier]
-        # nom du fichier - self.envelope arg
+    def __init__(self,distribution_list,envelope_list,temps = [-10,30]):
         self.distribution=distribution_list[0]
         self.distribution_arg = distribution_list[1:]
         self.envelope =envelope_list[0]
         self.envelope_arg = envelope_list[1:]
+        self.temps = temps
 
     def distribution_jitter(self):
         if self.distribution == "Cauchy":
@@ -121,11 +120,14 @@ class Source():
         if self.envelope == "Exponential":
             return Exponential(np.array(x_list),self.envelope_arg[0])
         elif self.envelope == "Experimental":
-            # code here experimental envelope were argument self.envelope_arg[0] = "file_name.json"
-            pass
+            return self.make_experimental_vect(self)
         elif self.envelope == "Gaussian" :
             return Gaussian(np.array(x_list), self.envelope_arg[0])
         else :
             raise TypeError("Unknow envelope")
+        
+    def make_experimental_vect(self):
+        
+        pass
         
 

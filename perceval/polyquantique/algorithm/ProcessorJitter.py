@@ -50,6 +50,9 @@ class ProcessorJitter():
                     output_prob[output_vect.index(list(vec))] += prob*bs_jitter.coef_list[state]
         return output_vect,output_prob
 
+    def set_post_process(self):
+        pass
+
     def print_output(self):
         for output_states in range(len(self.analyse['output_states'])):
             if np.sum(list(self.analyse['output_states'][output_states])) == self.n:
