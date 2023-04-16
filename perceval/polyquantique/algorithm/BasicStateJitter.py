@@ -106,7 +106,7 @@ class Source():
     def __init__(self,distribution_list,envelope_list,temps = [-10,30]):
         self.distribution=distribution_list[0]
         self.distribution_arg = distribution_list[1:]
-        self.envelope =envelope_list[0]
+        self.envelope = envelope_list[0]
         self.envelope_arg = envelope_list[1:]
         self.temps = temps
 

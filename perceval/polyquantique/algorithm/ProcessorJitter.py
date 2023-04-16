@@ -54,7 +54,12 @@ class ProcessorJitter():
         pass
 
     def print_output(self):
+        testState = []
+        testProb = []
         for output_states in range(len(self.analyse['output_states'])):
             if np.sum(list(self.analyse['output_states'][output_states])) == self.n:
-                print(self.analyse['output_states'][output_states],self.output_prob[output_states] )
-        print('Probabilite totale =',np.sum(self.output_prob))
+                print(self.analyse['output_states'][output_states],self.output_prob[output_states])
+                testState.append(self.analyse['output_states'][output_states])
+                testProb.append(self.output_prob[output_states])
+            print('Probabilite totale =',np.sum(self.output_prob))
+        return testState,testProb
