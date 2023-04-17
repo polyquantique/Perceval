@@ -8,6 +8,7 @@ import scipy as sc
 from scipy import signal
 from tabulate import tabulate
 from Convolution import createWaves
+from tabulate import tabulate
 
 
 def create_CRand(i,coef):
@@ -120,26 +121,25 @@ def create_inputs(enterFunc,Coefs,Dictionnary = None):
         
         return InputsBS
 
-def calculateCNOT(p):
+def calculateCNOT(p,name):
     #names = ['./acquired_data/xp_00/data.json','./acquired_data/xp_01/data.json','./acquired_data/xp_02/data.json','./acquired_data/xp_03/data.json','./acquired_data/xp_04/data.json','./acquired_data/xp_05/data.json','./acquired_data/xp_06/data.json','./acquired_data/xp_07/data.json','./acquired_data/xp_08/data.json','./acquired_data/xp_09/data.json']
-    names = ['./acquired_data/xp_00/data.json']
+    #names = ['./acquired_data/xp_00/data.json']
     compareVal = []
     realValMax = []
     realValMin = []
     delayVal = []
-    for i in names:
-        time, waves, delay, table, vHom, fullWaves = createWaves(i,doYouPlot = False,timeArray=2 ** 14 +1 )
-        new_base,coeffsMGS = modified_Schmidt(waves,time)
-        coeff = coeffsMGS[1,1]
-        TableValue = []
-
+    TableValue = []
+    time, waves, delay, table, vHom, fullWaves = createWaves(name,doYouPlot = False,timeArray=2 ** 14 +1 )
+    new_base,coeffsMGS = modified_Schmidt(waves,time)
+    coeff = coeffsMGS[1,1]
+    for vars in range(len(statesdict)):
 
         #statesProb = dict.fromkeys(statesdict.keys(),0)
         statesProb = {}
 
-        [C,Inputs,Expected] = create_CRand(2,coeff)
+        [C,Inputs,Expected] = create_CRand(vars,coeff)
         C = np.array(C)
-        C = C*0.95
+        #C = C*0.95
         InputsBS = create_inputs(Inputs,C)
 
         print(InputsBS)
@@ -173,10 +173,10 @@ def calculateCNOT(p):
             else :
                 statesProb[tempState] = val
 
-        print('statesProb')
+        """     print('statesProb')
         for i,j in statesProb.items():
-            print(i,j)
-        results = {key: value / 4 for key, value in statesProb.items()}
+            print(i,j) """
+        results = {key: value  for key, value in statesProb.items()}
         #print(results)
 
         TableValue.append(results)
@@ -184,6 +184,24 @@ def calculateCNOT(p):
         compareVal.append(statesProb)
         realValMax.append(table[2,3])
         realValMin.append(table[3,2])
-        delayVal.append(delay)
+    delayVal = delay
 
-    return TableValue,compareVal,realValMax,realValMin,delayVal
+    tableMes = [[] for i in range(len(statesdict.keys())+1)]
+    tableMes[0] = list(statesdict.values())
+    k = 1
+    for i in statesdict.keys():
+        l = 0
+        for j in statesdict.keys():
+            
+            if l==0:
+                tableMes[k].append(statesdict[i])
+            if j in TableValue[k-1].keys():
+                tableMes[k].append(TableValue[k-1][j])
+            else :
+                tableMes[k].append(0)
+            
+            l += 1
+        k += 1
+    print(tabulate(tableMes,headers='firstrow',tablefmt="fancy_grid"))
+
+    return tableMes,compareVal,realValMax,realValMin,delayVal,waves,time
