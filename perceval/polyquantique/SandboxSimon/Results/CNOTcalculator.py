@@ -143,6 +143,7 @@ def calculateCNOT(p,name):
         
         C = np.array(C)
         
+        #print(C)
         InputsBS = create_inputs(Inputs,C)
 
         print(InputsBS)
@@ -156,8 +157,9 @@ def calculateCNOT(p,name):
             #print(miniState,':',InputsBS[miniState])
             p.with_input(miniState)
             output = p.probs()['results']
-            #print(i,output)
+            
             for ii in output.keys():
+                #print(ii,output[ii])
                 if ii in realOutput.keys():
                     realOutput[ii] = realOutput[ii] + output[ii] * abs(InputsBS[miniState]) ** 2
                 else:
@@ -177,9 +179,10 @@ def calculateCNOT(p,name):
             else :
                 statesProb[tempState] = val
 
-        """     print('statesProb')
+        print('statesProb')
         for i,j in statesProb.items():
-            print(i,j) """
+            print(i,j)
+
         results = {key: value for key, value in statesProb.items()}
         #print(results)
 
@@ -188,6 +191,7 @@ def calculateCNOT(p,name):
         compareVal.append(statesProb)
         realValMax.append(table[2,3])
         realValMin.append(table[3,2])
+        
     delayVal = delay
 
     tableMes = [[] for i in range(len(statesdict.keys())+1)]
