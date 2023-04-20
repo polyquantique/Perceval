@@ -11,24 +11,24 @@ from Convolution import createWaves
 from tabulate import tabulate
 
 
-def create_CRand(i,coef):
+def create_CRand(i,coef1,coef2):
     CRand = []
     RawInputs = []
     Expected = []
     if i==0:
-        CRand.append(np.array([[1,0],[0,0],[np.sqrt(1-coef ** 2),coef],[0,0]])) #Input = [1,0,1,0] = 0,0 exp = 0,0
+        CRand.append(np.array([[1,0],[0,0],[coef1,coef2],[0,0]])) #Input = [1,0,1,0] = 0,0 exp = 0,0
         RawInputs.append([1,0,1,0])
         Expected = [1,0,1,0]
     elif i==1:
-        CRand.append(np.array([[1,0],[0,0],[0,0],[np.sqrt(1-coef ** 2),coef]])) #Input = [1,0,0,1] = 0,1 exp = 0,1
+        CRand.append(np.array([[1,0],[0,0],[0,0],[coef1,coef2]])) #Input = [1,0,0,1] = 0,1 exp = 0,1
         RawInputs.append([1,0,0,1])
         Expected = [1,0,0,1]
     elif i==2:
-        CRand.append(np.array([[0,0],[1,0],[np.sqrt(1-coef ** 2),coef],[0,0]])) #Input = [0,1,1,0] = 1,0 exp = 1,1
+        CRand.append(np.array([[0,0],[1,0],[coef1,coef2],[0,0]])) #Input = [0,1,1,0] = 1,0 exp = 1,1
         RawInputs.append([0,1,1,0])
         Expected = [0,1,0,1]
     elif i==3:
-        CRand.append(np.array([[0,0],[1,0],[0,0],[np.sqrt(1-coef ** 2),coef]])) #Input = [0,1,0,1] = 1,1 exp = 1,0
+        CRand.append(np.array([[0,0],[1,0],[0,0],[coef1,coef2]])) #Input = [0,1,0,1] = 1,1 exp = 1,0
         RawInputs.append([0,1,0,1])
         Expected = [0,1,1,0]
     else :
@@ -74,7 +74,8 @@ def create_inputs(enterFunc,Coefs,Dictionnary = None):
     
     for i in range(len(realInputs)):
         ArrCond = np.array(realInputs[i]).reshape(internMode,spatialMode).T
-        y = np.ma.masked_array(Arr, abs(ArrCond-1))
+        y = np.ma.masked_array(Arr, np.logical_not(ArrCond))
+        
         c.append(np.prod(y))
 
     k = 0
@@ -131,35 +132,38 @@ def calculateCNOT(p,name):
     TableValue = []
     time, waves, delay, table, vHom, fullWaves = createWaves(name,doYouPlot = False,timeArray=2 ** 14 +1 )
     new_base,coeffsMGS = modified_Schmidt(waves,time)
-    coeff = coeffsMGS[1,1]
+    coeff1 = coeffsMGS[1,0]
+    coeff2 = coeffsMGS[1,1]
     for vars in range(len(statesdict)):
 
         #statesProb = dict.fromkeys(statesdict.keys(),0)
         statesProb = {}
 
-        [C,Inputs,Expected] = create_CRand(vars,coeff)
+        [C,Inputs,Expected] = create_CRand(vars,coeff1,coeff2)
+        
         C = np.array(C)
-        #C = C*0.95
+        
         InputsBS = create_inputs(Inputs,C)
 
         print(InputsBS)
 
 
-        pcvl.pdisplay(p, recursive = True)
+        #pcvl.pdisplay(p, recursive = True)
+
         realOutput = {}
         for i in range(len(InputsBS)):
             miniState = InputsBS[i]
             #print(miniState,':',InputsBS[miniState])
             p.with_input(miniState)
             output = p.probs()['results']
-            #print(output)
+            #print(i,output)
             for ii in output.keys():
                 if ii in realOutput.keys():
-                    realOutput[ii] = realOutput[ii] + output[ii] * abs(InputsBS[InputsBS[i]]) ** 2
+                    realOutput[ii] = realOutput[ii] + output[ii] * abs(InputsBS[miniState]) ** 2
                 else:
-                    realOutput[ii] = output[ii] * abs(InputsBS[InputsBS[i]]) ** 2
+                    realOutput[ii] = output[ii] * abs(InputsBS[miniState]) ** 2
             
-
+        
         Prob = 0
         
         for states,val in realOutput.items():
@@ -176,7 +180,7 @@ def calculateCNOT(p,name):
         """     print('statesProb')
         for i,j in statesProb.items():
             print(i,j) """
-        results = {key: value  for key, value in statesProb.items()}
+        results = {key: value for key, value in statesProb.items()}
         #print(results)
 
         TableValue.append(results)
@@ -202,6 +206,6 @@ def calculateCNOT(p,name):
             
             l += 1
         k += 1
-    print(tabulate(tableMes,headers='firstrow',tablefmt="fancy_grid"))
+    #print(tabulate(tableMes,headers='firstrow',tablefmt="fancy_grid"))
 
     return tableMes,compareVal,realValMax,realValMin,delayVal,waves,time

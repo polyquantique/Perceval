@@ -121,14 +121,14 @@ def modified_Schmidt(waves,x):
     N = len(x)
     new_base = np.zeros((N_shift, N))
 
-    for i in range(150):
+    for i in range(300):
         # here 10**-14 is a stand in for error limit
         
         if i==0:
             [new_base,test] = qr_mgs_decompose(waves.T)
         else :
             [new_base,test] = qr_mgs_decompose(new_base)
-        if characterize_basis(new_base) < 2*10**-15:
+        if characterize_basis(new_base) < 2*10**-20:
             break 
     new_base = new_base.T
 
