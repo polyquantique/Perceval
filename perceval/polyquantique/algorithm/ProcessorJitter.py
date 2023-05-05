@@ -8,10 +8,19 @@ import itertools
 
 
 class ProcessorJitter():
-
+    """Take a Processor object and a BasicStateJitter object and compute the output of the circuit.
+    """
 
 
     def __init__(self, bs_jitter,processor):
+        """Make directly the result and store the analyse of the circuit in analyse, 
+        the output state and their probabilities in output_vect and output_prob
+
+        :param bs_jitter: The BasicStateJitter you want to analyse
+        :type bs_jitter: BasicStateJitter
+        :param processor: The processor you want to use 
+        :type processor: Processor
+        """
         processor = processor
         self.inputs = []
         for state in list(itertools.product([0,1],repeat = bs_jitter.bs.n)):
@@ -30,11 +39,21 @@ class ProcessorJitter():
         
 
     def make_results(self,bs_jitter,processor):
+        """_summary_
+
+        :param bs_jitter: _description_
+        :type bs_jitter: _type_
+        :param processor: _description_
+        :type processor: _type_
+        :return: _description_
+        :rtype: _type_
+        """
         Analyse = self.analyse
         output_vect = [list(Analyse['output_states'][i]) for i in range(len(Analyse['output_states']))]
         list_in = [list(Analyse['input_states'][i]) for i in range(len(Analyse['input_states']))]
         output_prob = np.zeros((len(Analyse['output_states']),1))
         for state in range(len(bs_jitter.bs_vector)):
+            print(bs_jitter.bs_vector[state])
             listv = bs_jitter.bs_vector[state]
             n=listv.count(tuple([ 0 for i in range(bs_jitter.bs.m)]))
             for i in range(n): listv.remove(tuple([ 0 for i in range(bs_jitter.bs.m)]))
@@ -51,6 +70,7 @@ class ProcessorJitter():
         return output_vect,output_prob
 
     def set_post_process(self):
+        # Not coded yet
         pass
 
     def print_output(self):
@@ -59,7 +79,4 @@ class ProcessorJitter():
         for output_states in range(len(self.analyse['output_states'])):
             if np.sum(list(self.analyse['output_states'][output_states])) == self.n:
                 print(self.analyse['output_states'][output_states],self.output_prob[output_states])
-                testState.append(self.analyse['output_states'][output_states])
-                testProb.append(self.output_prob[output_states])
-            print('Probabilite totale =',np.sum(self.output_prob))
-        return testState,testProb
+        print('Probabilite totale =',np.sum(self.output_prob))
