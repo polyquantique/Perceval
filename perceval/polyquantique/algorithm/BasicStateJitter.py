@@ -28,7 +28,7 @@ class BasicStateJitter():
         
         self.bs = pcvl.BasicState(state)
         if source is None:      
-            source = SourceJitter(["Dirac",1],["Exponential",0.5])
+            source = SourceJitter(["Dirac",1],["Exponential",1e12])
         if self.bs.m != np.array(offset).size:  # check if the jitter is the right size
             raise TypeError("State and offset must have the same lenght")
         self.offset = offset
