@@ -7,6 +7,22 @@ import scipy as sc
 import itertools
 import time as time 
 
+@staticmethod
+def product(arg1, arg2):
+    if arg1 == None:
+        result = []
+        for i in range(len(arg2)):
+            result1 = [arg2[i]]
+            result.append(result1)
+        return result
+    else:
+        result = []
+        for i in range(len(arg1)):
+            result1 = []
+            for j in arg2:
+                result1.append(arg1[i]+[j])
+            result+=result1
+        return result
 
 class ProcessorJitter():
     """Take a Processor object and a BasicStateJitter object and compute the output of the circuit.
@@ -49,28 +65,42 @@ class ProcessorJitter():
         """
         output_vect = [list(Analyse['output_states'][i]) for i in range(len(Analyse['output_states']))]
         list_in = [list(Analyse['input_states'][i]) for i in range(len(Analyse['input_states']))]
+        #print(list_in)
         output_prob = np.zeros((len(Analyse['output_states']),1))
         sizestate = len(bs_jitter.bs_vector)
+        prob_reduite = []
+        for i in range(len(list_in)):
+            list_i = []
+            for j in range(len(output_vect)):
+                if Analyse['results'][i,j] != 0:
+                    list_i.append([Analyse['results'][i,j],j])
+            prob_reduite.append(list_i)
+        #print(prob_reduite)
+        #print(len(prob_reduite))
         for state in range(len(bs_jitter.bs_vector)):
-            init = time.time()
-            print(state,'/',sizestate)
+            # init = time.time()
+            # print(state,'/',sizestate)
             listv = bs_jitter.bs_vector[state]*1
-            print(listv)
+            #print(listv)
             n=listv.count(tuple([ 0 for i in range(bs_jitter.bs.m)]))
             for i in range(n): 
                 listv.remove(tuple([ 0 for i in range(bs_jitter.bs.m)]))
-            idx_matrix = list(itertools.product(np.arange(len(Analyse['output_states'])),repeat=bs_jitter.bs.n-n))
-            print(len(idx_matrix))
+
+
+            idx_matrix = product(None,np.arange(len(prob_reduite[list_in.index(list(listv[0]))])))
+            for i in range(len(listv)-1):
+                idx_matrix = product(idx_matrix,np.arange(len(prob_reduite[list_in.index(list(listv[i+1]))])))
+
+            #print(idx_matrix)
             for idx in range(len(idx_matrix)):
                 prob = 1
                 vec = np.zeros(bs_jitter.bs.m)
                 for line in range(len(idx_matrix[idx])):
-                    #if list(listv[line]) != [ 0 for i in range(bs_jitter.bs.m)]:
-                    prob*= Analyse['results'][list_in.index(list(listv[line])),idx_matrix[idx][line]]
-                    vec += output_vect[idx_matrix[idx][line]]
+                    prob*= prob_reduite[list_in.index(list(listv[line]))][idx_matrix[idx][line]][0]
+                    vec += output_vect[prob_reduite[list_in.index(list(listv[line]))][idx_matrix[idx][line]][1]]
                 if prob != 0:
                     output_prob[output_vect.index(list(vec))] += prob*bs_jitter.coef_list[state]
-            print('temps =',time.time()-init)
+            #print('temps =',time.time()-init)
         return output_vect,output_prob
 
     def set_post_process(self):
@@ -83,5 +113,6 @@ class ProcessorJitter():
         """
         for output_states in range(len(self.analyse['output_states'])):
             if np.sum(list(self.analyse['output_states'][output_states])) == self.n:
-                print(self.analyse['output_states'][output_states],self.output_prob[output_states])
+                if self.output_prob[output_states] != 0:
+                    print(self.analyse['output_states'][output_states],self.output_prob[output_states])
         print('Probabilite totale =',np.sum(self.output_prob))
